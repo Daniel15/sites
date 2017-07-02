@@ -1,5 +1,7 @@
 Sites
 =====
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/Daniel15/sites.svg)](https://greenkeeper.io/)
 Sites is a small collection of useful utilities for building static websites, without having to configure complex build tools. It works out-of-the-box with close to zero configuration required.
 
 Features
