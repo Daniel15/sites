@@ -1,6 +1,6 @@
 {
   "name": "sites",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Super simple static sites",
   "main": "index.js",
   "homepage": "https://dl.vc/sites",

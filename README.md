@@ -59,6 +59,10 @@ tl;dr: See the `example` directory in this repo for a sample site.
 
 Changelog
 =========
+1.0.1 - 3rd July 2017
+---------------------
+- Added support for JavaScript. JS files are compiled using Babel
+- Include source maps for combined files
 
 1.0 - 2nd July 2017
 -------------------
