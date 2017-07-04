@@ -1,6 +1,7 @@
 'use strict';
 
 const autoprefixer = require('autoprefixer');
+const babel = require('gulp-babel');
 const browserSync = require('browser-sync').create();
 const clean = require('gulp-clean');
 const csso = require('gulp-csso');
@@ -13,6 +14,7 @@ const rev = require('gulp-rev');
 const revReplace = require('gulp-rev-replace');
 const sass = require('gulp-sass');
 const sourcemaps = require('gulp-sourcemaps');
+const uglify = require('gulp-uglify/composer')(require('uglify-es'), console);
 const useref = require('gulp-useref');
 
 /**
@@ -37,6 +39,7 @@ function installTasks(gulp) {
       },
     });
     gulp.watch('./css/**/*.scss', ['sites:css']);
+    gulp.watch('./js/**/*.js', ['sites:js']);
     gulp.watch(['./*.html', paths.assets + '**']).on('change', browserSync.reload);
   });
 
@@ -70,8 +73,27 @@ function installTasks(gulp) {
       .pipe(browserSync.stream({match: '**/*.css'}));
   });
 
+  gulp.task('sites:js', () => {
+    return gulp.src('./js/**/*.js')
+      // Ignore files that haven't been modified
+      .pipe(newer({
+        dest: paths.output + 'js/',
+      }))
+      .pipe(sourcemaps.init())
+      .pipe(babel({
+        presets: [
+          ['env', {
+            browsers: ['last 3 versions', 'ie >= 9'],
+          }]
+        ],
+      }))
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(paths.output + 'js/'))
+      .pipe(browserSync.stream({match: '**/*.js'}));
+  });
+
   // Depends on all tasks required for development mode builds
-  gulp.task('sites:build:dev', ['sites:css']);
+  gulp.task('sites:build:dev', ['sites:css', 'sites:js']);
 
   // Removes all files from the output directory
   gulp.task('sites:clean', () => {
@@ -89,8 +111,9 @@ function installTasks(gulp) {
   });
 
   // Builds the production version of the site
-  gulp.task('sites:build:prod', ['sites:build:prod:assets', 'sites:css'], () => {
+  gulp.task('sites:build:prod', ['sites:build:prod:assets', 'sites:build:dev'], () => {
     const assetManifest = gulp.src(paths.output + 'assets/rev-manifest.json');
+
     const cssTasks = lazypipe()
       .pipe(postcss, [
         postcssURL({
@@ -102,10 +125,14 @@ function installTasks(gulp) {
       ])
       .pipe(csso);
 
+    const jsTasks = lazypipe()
+      .pipe(uglify);
+
     return gulp.src('./*.html')
       // Grab dependencies from HTML
       .pipe(useref())
       .pipe(gulpif('*.css', cssTasks()))
+      .pipe(gulpif('*.js', jsTasks()))
       // Rename files to include hash, but NOT .html files
       .pipe(gulpif('!*.html', rev()))
       // Replace CSS + JS references to include hash
