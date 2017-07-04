@@ -82,7 +82,7 @@ function installTasks(gulp) {
       .pipe(sourcemaps.init())
       .pipe(babel({
         presets: [
-          ['env', {
+          [require('babel-preset-env'), {
             browsers: ['last 3 versions', 'ie >= 9'],
           }]
         ],
