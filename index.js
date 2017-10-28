@@ -39,6 +39,7 @@ function installTasks(gulp) {
       },
     });
     gulp.watch('./css/**/*.scss', ['sites:css']);
+    gulp.watch('./css/**/*.css', ['sites:css:raw']);
     gulp.watch('./js/**/*.js', ['sites:js']);
     gulp.watch(['./*.html', paths.assets + '**']).on('change', browserSync.reload);
   });
@@ -73,6 +74,22 @@ function installTasks(gulp) {
       .pipe(browserSync.stream({match: '**/*.css'}));
   });
 
+  // Copies regular CSS files to output directory
+  gulp.task('sites:css:raw', () => {
+    return gulp.src('./css/*.css')
+      // Ignore files that haven't been modified
+      .pipe(newer(paths.output + 'css/'))
+      .pipe(sourcemaps.init())
+      .pipe(postcss([
+        autoprefixer({
+          browsers: ['last 5 versions'],
+        })
+      ]))
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(paths.output + 'css/'))
+      .pipe(browserSync.stream({match: '**/*.css'}));
+  });
+
   gulp.task('sites:js', () => {
     return gulp.src('./js/**/*.js')
       // Ignore files that haven't been modified
@@ -93,7 +110,7 @@ function installTasks(gulp) {
   });
 
   // Depends on all tasks required for development mode builds
-  gulp.task('sites:build:dev', ['sites:css', 'sites:js']);
+  gulp.task('sites:build:dev', ['sites:css', 'sites:css:raw', 'sites:js']);
 
   // Removes all files from the output directory
   gulp.task('sites:clean', () => {
