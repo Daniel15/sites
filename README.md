@@ -59,6 +59,11 @@ tl;dr: See the `example` directory in this repo for a sample site.
 
 Changelog
 =========
+1.0.2 - 28th October 2017
+-------------------------
+- Copy regular .css files to the output directory, in addition to compiling Sass
+- Live reload Sass file when  `css/modules` and `css/partials` directories change
+
 1.0.1 - 3rd July 2017
 ---------------------
 - Added support for JavaScript. JS files are compiled using Babel
