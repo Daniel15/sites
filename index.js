@@ -60,7 +60,11 @@ function installTasks(gulp) {
         dest: paths.output + 'css/',
         ext: '.css',
         // Reload all CSS files if includes are modified
-        extra: ['./css/_includes/*.scss']
+        extra: [
+          './css/_includes/*.scss',
+          './css/modules/*.scss',
+          './css/partials/*.scss',
+        ]
       }))
       .pipe(sourcemaps.init())
       .pipe(sass().on('error', sass.logError))
